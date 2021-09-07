@@ -14,7 +14,7 @@ pub fn create_store_and_publish_did(wallet_handle: WalletHandle, pool_handle: Po
     let (trustee_did, _) = create_my_did(wallet_handle, &my_did_json)?;
     let my_did_json = json!({"method_name": method_name}).to_string();
     let (did, vk) = create_my_did(wallet_handle, &my_did_json)?;
-    let nym = ledger::build_nym_request(&trustee_did, &did, Some(&vk), None, Some(role))?;
+    let nym = ledger::build_nym_request(&trustee_did, &did, Some(&vk), None, None, Some(role))?;
     let response = ledger::sign_and_submit_request(pool_handle, wallet_handle, &trustee_did, &nym)?;
     pool::check_response_type(&response, ResponseType::REPLY);
     Ok((did, vk))
@@ -66,7 +66,7 @@ pub fn replace_keys_apply(wallet_handle: WalletHandle, did: &str) -> Result<(), 
 pub fn replace_keys(pool_handle: PoolHandle, wallet_handle: WalletHandle, did: &str) -> Result<String, IndyError> {
     let verkey = did::replace_keys_start(wallet_handle, did, "{}").wait().unwrap();
 
-    let nym_request = ledger::build_nym_request(did, did, Some(&verkey), None, None).unwrap();
+    let nym_request = ledger::build_nym_request(did, did, Some(&verkey), None, None, None).unwrap();
     ledger::sign_and_submit_request(pool_handle, wallet_handle, did, &nym_request).unwrap();
 
     replace_keys_apply(wallet_handle, did).unwrap();

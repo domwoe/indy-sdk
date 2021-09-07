@@ -150,7 +150,7 @@ impl From<&Command> for CommandMetric {
                     LedgerCommand::SignRequest(_, _, _, _) => { CommandMetric::LedgerCommandSignRequest }
                     LedgerCommand::MultiSignRequest(_, _, _, _) => { CommandMetric::LedgerCommandMultiSignRequest }
                     LedgerCommand::BuildGetDdoRequest(_, _, _) => { CommandMetric::LedgerCommandBuildGetDdoRequest }
-                    LedgerCommand::BuildNymRequest(_, _, _, _, _, _) => { CommandMetric::LedgerCommandBuildNymRequest }
+                    LedgerCommand::BuildNymRequest(_, _, _, _, _, _, _) => { CommandMetric::LedgerCommandBuildNymRequest }
                     LedgerCommand::BuildAttribRequest(_, _, _, _, _, _) => { CommandMetric::LedgerCommandBuildAttribRequest }
                     LedgerCommand::BuildGetAttribRequest(_, _, _, _, _, _) => { CommandMetric::LedgerCommandBuildGetAttribRequest }
                     LedgerCommand::BuildGetNymRequest(_, _, _) => { CommandMetric::LedgerCommandBuildGetNymRequest }

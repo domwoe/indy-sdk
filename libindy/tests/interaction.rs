@@ -85,7 +85,7 @@ impl Pool {
 
     pub fn submit_nym(&self, issuer_did: &str, issuer_wallet_handle: WalletHandle, prover_did: &str, prover_verkey: Option<&str>)
     {
-        let nym_request = ledger::build_nym_request(issuer_did, prover_did, prover_verkey, None, None).unwrap();
+        let nym_request = ledger::build_nym_request(issuer_did, prover_did, prover_verkey, None, None, None).unwrap();
         ledger::sign_and_submit_request(self.pool_handle, issuer_wallet_handle, &issuer_did, &nym_request).unwrap();
     }
 

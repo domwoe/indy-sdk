@@ -332,6 +332,7 @@ pub extern fn indy_build_get_ddo_request(command_handle: CommandHandle,
 /// target_did: Target DID as base58-encoded string for 16 or 32 bit DID value.
 /// verkey: Target identity verification key as base58-encoded string.
 /// alias: NYM's alias.
+/// diddoc_content: DID Document as defined in did:indy method
 /// role: Role of a user NYM record:
 ///                             null (common USER)
 ///                             TRUSTEE
@@ -353,22 +354,24 @@ pub extern fn indy_build_nym_request(command_handle: CommandHandle,
                                      target_did: *const c_char,
                                      verkey: *const c_char,
                                      alias: *const c_char,
+                                     diddoc_content: *const c_char,
                                      role: *const c_char,
                                      cb: Option<extern fn(command_handle_: CommandHandle,
                                                           err: ErrorCode,
                                                           request_json: *const c_char)>) -> ErrorCode {
-    trace!("indy_build_nym_request: >>> submitter_did: {:?}, target_did: {:?}, verkey: {:?}, alias: {:?}, role: {:?}",
-           submitter_did, target_did, verkey, alias, role);
+    trace!("indy_build_nym_request: >>> submitter_did: {:?}, target_did: {:?}, verkey: {:?}, alias: {:?}, diddoc_content: {:?}, role: {:?}",
+           submitter_did, target_did, verkey, alias, diddoc_content, role);
 
     check_useful_validatable_string!(submitter_did, ErrorCode::CommonInvalidParam2, DidValue);
     check_useful_validatable_string!(target_did, ErrorCode::CommonInvalidParam3, DidValue);
     check_useful_opt_c_str!(verkey, ErrorCode::CommonInvalidParam4);
     check_useful_opt_c_str!(alias, ErrorCode::CommonInvalidParam5);
-    check_useful_opt_c_str!(role, ErrorCode::CommonInvalidParam6);
-    check_useful_c_callback!(cb, ErrorCode::CommonInvalidParam7);
+    check_useful_opt_json!(diddoc_content, ErrorCode::CommonInvalidParam6, serde_json::Value);
+    check_useful_opt_c_str!(role, ErrorCode::CommonInvalidParam7);
+    check_useful_c_callback!(cb, ErrorCode::CommonInvalidParam8);
 
-    trace!("indy_build_nym_request: entities >>> submitter_did: {:?}, target_did: {:?}, verkey: {:?}, alias: {:?}, role: {:?}",
-           submitter_did, target_did, verkey, alias, role);
+    trace!("indy_build_nym_request: entities >>> submitter_did: {:?}, target_did: {:?}, verkey: {:?}, alias: {:?}, diddoc_content: {:?}, role: {:?}",
+           submitter_did, target_did, verkey, alias, diddoc_content, role);
 
     let result = CommandExecutor::instance()
         .send(Command::Ledger(LedgerCommand::BuildNymRequest(
@@ -376,6 +379,7 @@ pub extern fn indy_build_nym_request(command_handle: CommandHandle,
             target_did,
             verkey,
             alias,
+            diddoc_content,
             role,
             boxed_callback_string!("indy_build_nym_request", cb, command_handle)
         )));

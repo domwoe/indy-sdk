@@ -100,7 +100,7 @@ mod high_cases {
 
             let (did, _) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
-            let nym_request = ledger::build_nym_request(&setup.did, &did, None, None, None).unwrap();
+            let nym_request = ledger::build_nym_request(&setup.did, &did, None, None, None, None).unwrap();
             let nym_response = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_request).unwrap();
             pool::check_response_type(&nym_response, ResponseType::REPLY);
         }
@@ -122,7 +122,7 @@ mod high_cases {
 
             let (did, _) = did::create_and_store_my_did_v1(setup.wallet_handle, None).unwrap();
 
-            let nym_request = ledger::build_nym_request(&setup.did, &did, None, None, None).unwrap();
+            let nym_request = ledger::build_nym_request(&setup.did, &did, None, None, None, None).unwrap();
             let nym_response = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_request).unwrap();
             pool::check_response_type(&nym_response, ResponseType::REPLY);
         }
@@ -308,7 +308,7 @@ mod high_cases {
                 "dest": DEST,
             });
 
-            let request = ledger::build_nym_request(&IDENTIFIER, &DEST, None, None, None).unwrap();
+            let request = ledger::build_nym_request(&IDENTIFIER, &DEST, None, None, None, None).unwrap();
             check_request(&request, expected_result, IDENTIFIER);
         }
 
@@ -326,7 +326,7 @@ mod high_cases {
                 "verkey": VERKEY_TRUSTEE
             });
 
-            let request = ledger::build_nym_request(&IDENTIFIER, &DEST, Some(VERKEY_TRUSTEE), Some(alias), Some(role)).unwrap();
+            let request = ledger::build_nym_request(&IDENTIFIER, &DEST, Some(VERKEY_TRUSTEE), Some(alias), None, Some(role)).unwrap();
             check_request(&request, expected_result, IDENTIFIER);
         }
 
@@ -339,7 +339,7 @@ mod high_cases {
                 "type": constants::NYM
             });
 
-            let request = ledger::build_nym_request(&IDENTIFIER, &DEST, None, None, Some("")).unwrap();
+            let request = ledger::build_nym_request(&IDENTIFIER, &DEST, None, None, None, Some("")).unwrap();
             check_request(&request, expected_result, IDENTIFIER);
         }
 
@@ -351,7 +351,7 @@ mod high_cases {
                 "dest": DEST,
             });
 
-            let request = ledger::build_nym_request(&IDENTIFIER_V1, &DEST_V1, None, None, None).unwrap();
+            let request = ledger::build_nym_request(&IDENTIFIER_V1, &DEST_V1, None, None, None, None).unwrap();
             check_request(&request, expected_result, IDENTIFIER);
         }
 
@@ -403,7 +403,7 @@ mod high_cases {
 
             let (my_did, my_verkey) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
-            let nym_request = ledger::build_nym_request(&setup.did, &my_did, Some(&my_verkey), None, None).unwrap();
+            let nym_request = ledger::build_nym_request(&setup.did, &my_did, Some(&my_verkey), None, None, None).unwrap();
             let nym_resp = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_request).unwrap();
             pool::check_response_type(&nym_resp, ResponseType::REPLY);
 
@@ -850,6 +850,7 @@ mod high_cases {
 
         #[test]
         fn indy_build_get_txn_request_for_fully_qualified() {
+            
             let expected_result = json!({
                 "type": constants::GET_TXN,
                 "data": SEQ_NO,
@@ -1419,7 +1420,7 @@ mod high_cases {
 
             let (did, _) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
-            let nym_request = ledger::build_nym_request(&setup.did, &did, None, None, None).unwrap();
+            let nym_request = ledger::build_nym_request(&setup.did, &did, None, None, None, None).unwrap();
             let nym_resp = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_request).unwrap();
             pool::check_response_type(&nym_resp, ResponseType::REPLY);
 
@@ -2682,11 +2683,11 @@ mod high_cases {
 
             let (did_, verkey_) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
-            let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None).unwrap();
+            let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None, None).unwrap();
             let nym_resp = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_req).unwrap();
             pool::check_response_type(&nym_resp, ResponseType::REJECT);
 
-            let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None).unwrap();
+            let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None, None).unwrap();
             let nym_req = ledger::append_txn_author_agreement_acceptance_to_request(&nym_req,
                                                                                     Some(&taa_text), Some(&taa_version),
                                                                                     None, &aml_label,
@@ -2713,7 +2714,7 @@ mod high_cases {
             let (did_, verkey_) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
             {
-                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None).unwrap();
+                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None, None).unwrap();
                 let nym_resp = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_req).unwrap();
                 pool::check_response_type(&nym_resp, ResponseType::REJECT);
             }
@@ -2721,7 +2722,7 @@ mod high_cases {
             _disable_taa(setup.pool_handle, setup.wallet_handle, &setup.did);
 
             {
-                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None).unwrap();
+                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None, None).unwrap();
                 let nym_resp = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_req).unwrap();
                 pool::check_response_type(&nym_resp, ResponseType::REPLY);
             }
@@ -2738,7 +2739,7 @@ mod high_cases {
             let (did_, verkey_) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
             {
-                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None).unwrap();
+                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None, None).unwrap();
 
                 let nym_req = ledger::append_txn_author_agreement_acceptance_to_request(&nym_req,
                                                                                         Some("INVALID TAA TEXT"),
@@ -2764,7 +2765,7 @@ mod high_cases {
             let (did_, verkey_) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
             {
-                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None).unwrap();
+                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None, None).unwrap();
                 let nym_req = ledger::append_txn_author_agreement_acceptance_to_request(&nym_req,
                                                                                         Some(&taa_text),
                                                                                         Some(&taa_version),
@@ -2823,7 +2824,7 @@ mod high_cases {
             // Send NYM with TAA 1
             {
                 let (did_, verkey_) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
-                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None).unwrap();
+                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None, None).unwrap();
                 let nym_req = ledger::append_txn_author_agreement_acceptance_to_request(&nym_req,
                                                                                         Some(&taa_text), Some(&taa_version),
                                                                                         None, &aml_label,
@@ -2836,7 +2837,7 @@ mod high_cases {
             // Send NYM with TAA 2
             {
                 let (did_, verkey_) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
-                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None).unwrap();
+                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None, None).unwrap();
                 let nym_req = ledger::append_txn_author_agreement_acceptance_to_request(&nym_req,
                                                                                         Some(&taa_text_2), Some(&taa_version_2),
                                                                                         None, &aml_label,
@@ -2856,7 +2857,7 @@ mod high_cases {
             // Send NYM with TAA 1
             {
                 let (did_, verkey_) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
-                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None).unwrap();
+                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None, None).unwrap();
                 let nym_req = ledger::append_txn_author_agreement_acceptance_to_request(&nym_req,
                                                                                         Some(&taa_text), Some(&taa_version),
                                                                                         None, &aml_label,
@@ -2869,7 +2870,7 @@ mod high_cases {
             // Send NYM with TAA 2
             {
                 let (did_, verkey_) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
-                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None).unwrap();
+                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None, None).unwrap();
                 let nym_req = ledger::append_txn_author_agreement_acceptance_to_request(&nym_req,
                                                                                         Some(&taa_text_2), Some(&taa_version_2),
                                                                                         None, &aml_label,
@@ -2918,7 +2919,7 @@ mod high_cases {
             // Send NYM with using acceptance time that earlier ratification_ts
             {
                 let (did_, verkey_) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
-                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None).unwrap();
+                let nym_req = ledger::build_nym_request(&setup.did, &did_, Some(&verkey_), None, None, None).unwrap();
                 let nym_req = ledger::append_txn_author_agreement_acceptance_to_request(&nym_req,
                                                                                         Some(&taa_text), Some(&taa_version),
                                                                                         None, &aml_label,
@@ -2937,7 +2938,7 @@ mod high_cases {
 
         fn _setup_new_identity(wallet_handle: WalletHandle, pool_handle: PoolHandle) -> String {
             let (my_did, my_vk) = did::create_and_store_my_did(wallet_handle, None).unwrap();
-            let nym = ledger::build_nym_request(DID_TRUSTEE, &my_did, Some(&my_vk), None, None).unwrap();
+            let nym = ledger::build_nym_request(DID_TRUSTEE, &my_did, Some(&my_vk), None, None, None).unwrap();
             let response = ledger::sign_and_submit_request(pool_handle, wallet_handle, DID_TRUSTEE, &nym).unwrap();
             pool::check_response_type(&response, ResponseType::REPLY);
             my_did
@@ -3187,7 +3188,7 @@ mod medium_cases {
             let setup = Setup::trustee();
 
             let (did, _) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
-            let nym_request = ledger::build_nym_request(&setup.did, &did, None, None, None).unwrap();
+            let nym_request = ledger::build_nym_request(&setup.did, &did, None, None, None, None).unwrap();
             let response = ledger::submit_request(setup.pool_handle, &nym_request).unwrap();
             pool::check_response_type(&response, ResponseType::REQNACK);
         }
@@ -3198,7 +3199,7 @@ mod medium_cases {
             let setup = Setup::trustee();
             let (my_did, _) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
-            let nym_request = ledger::build_nym_request(&setup.did, &my_did, None, None, None).unwrap();
+            let nym_request = ledger::build_nym_request(&setup.did, &my_did, None, None, None, None).unwrap();
             let response = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_request).unwrap();
             pool::check_response_type(&response, ResponseType::REPLY);
         }
@@ -3209,7 +3210,7 @@ mod medium_cases {
             let setup = Setup::trustee();
             let (my_did, my_verkey) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
-            let nym_request = ledger::build_nym_request(&setup.did, &my_did, Some(&my_verkey), Some("some_alias"), Some("STEWARD")).unwrap();
+            let nym_request = ledger::build_nym_request(&setup.did, &my_did, Some(&my_verkey), Some("some_alias"), None, Some("STEWARD")).unwrap();
             let response = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_request).unwrap();
             pool::check_response_type(&response, ResponseType::REPLY);
         }
@@ -3221,7 +3222,7 @@ mod medium_cases {
 
             for role in ["STEWARD", "TRUSTEE", "TRUST_ANCHOR", "ENDORSER", "NETWORK_MONITOR"].iter() {
                 let (my_did, _) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
-                let nym_request = ledger::build_nym_request(&setup.did, &my_did, None, None, Some(role)).unwrap();
+                let nym_request = ledger::build_nym_request(&setup.did, &my_did, None, None, None, Some(role)).unwrap();
                 let response = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_request).unwrap();
                 pool::check_response_type(&response, ResponseType::REPLY);
             }
@@ -3230,7 +3231,7 @@ mod medium_cases {
         #[test]
         #[cfg(feature = "local_nodes_pool")]
         fn indy_build_nym_requests_works_for_wrong_role() {
-            let res = ledger::build_nym_request(&IDENTIFIER, &DEST, None, None, Some("WRONG_ROLE"));
+            let res = ledger::build_nym_request(&IDENTIFIER, &DEST, None, None, None, Some("WRONG_ROLE"));
             assert_code!(ErrorCode::CommonInvalidStructure, res);
         }
 
@@ -3240,12 +3241,12 @@ mod medium_cases {
             let setup = Setup::trustee();
             let (my_did, _) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
-            let nym_request = ledger::build_nym_request(&setup.did, &my_did, None, None, None).unwrap();
+            let nym_request = ledger::build_nym_request(&setup.did, &my_did, None, None, None, None).unwrap();
             let response = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_request).unwrap();
             pool::check_response_type(&response, ResponseType::REPLY);
 
             let (my_did2, _) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
-            let nym_request = ledger::build_nym_request(&my_did, &my_did2, None, None, None).unwrap();
+            let nym_request = ledger::build_nym_request(&my_did, &my_did2, None, None, None, None).unwrap();
             let response = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &my_did, &nym_request).unwrap();
             pool::check_response_type(&response, ResponseType::REQNACK);
         }
@@ -3257,7 +3258,7 @@ mod medium_cases {
 
             let (did, _) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
-            let nym_request = ledger::build_nym_request(&did, DID, None, None, None).unwrap();
+            let nym_request = ledger::build_nym_request(&did, DID, None, None, None, None).unwrap();
             let response = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &did, &nym_request).unwrap();
             pool::check_response_type(&response, ResponseType::REQNACK);
         }
@@ -3278,14 +3279,14 @@ mod medium_cases {
         #[test]
         #[cfg(feature = "local_nodes_pool")]
         fn indy_build_nym_request_works_for_invalid_submitter_identifier() {
-            let res = ledger::build_nym_request(INVALID_IDENTIFIER, IDENTIFIER, None, None, None);
+            let res = ledger::build_nym_request(INVALID_IDENTIFIER, IDENTIFIER, None, None, None, None);
             assert_code!(ErrorCode::CommonInvalidStructure, res);
         }
 
         #[test]
         #[cfg(feature = "local_nodes_pool")]
         fn indy_build_nym_request_works_for_invalid_target_identifier() {
-            let res = ledger::build_nym_request(IDENTIFIER, INVALID_IDENTIFIER, None, None, None);
+            let res = ledger::build_nym_request(IDENTIFIER, INVALID_IDENTIFIER, None, None, None, None);
             assert_code!(ErrorCode::CommonInvalidStructure, res);
         }
 
@@ -3310,7 +3311,7 @@ mod medium_cases {
             let (my_did, my_verkey) = did::create_and_store_my_did(setup.wallet_handle, None).unwrap();
 
             let mut nym_request = ledger::build_nym_request(&setup.did, &my_did,
-                                                            Some(&my_verkey), None, Some("TRUSTEE")).unwrap();
+                                                            Some(&my_verkey), None, None, Some("TRUSTEE")).unwrap();
             let nym_req_resp = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_request).unwrap();
             pool::check_response_type(&nym_req_resp, ResponseType::REPLY);
 
@@ -3320,7 +3321,7 @@ mod medium_cases {
             let get_nym_response_data_with_role: NymData = serde_json::from_str(&get_nym_response_data_with_role).unwrap();
 
             nym_request = ledger::build_nym_request(&my_did, &my_did,
-                                                    Some(&my_verkey), None, Some("")).unwrap();
+                                                    Some(&my_verkey), None, None, Some("")).unwrap();
             let nym_req_resp = ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &my_did, &nym_request).unwrap();
             pool::check_response_type(&nym_req_resp, ResponseType::REPLY);
 

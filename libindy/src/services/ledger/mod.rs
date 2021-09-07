@@ -57,7 +57,7 @@ impl LedgerService {
 
     #[logfn(Info)]
     pub fn build_nym_request(&self, identifier: &DidValue, dest: &DidValue, verkey: Option<&str>,
-                             alias: Option<&str>, role: Option<&str>) -> IndyResult<String> {
+                             alias: Option<&str>, diddoc_content: Option<&serde_json::Value>, role: Option<&str>) -> IndyResult<String> {
         let role = if let Some(r) = role {
             Some(
                 if r == ROLE_REMOVE {
@@ -80,6 +80,7 @@ impl LedgerService {
         build_result!(NymOperation, Some(identifier), dest.to_short(),
                                                       verkey.map(String::from),
                                                       alias.map(String::from),
+                                                      diddoc_content.map(serde_json::Value::to_string),
                                                       role)
     }
 
@@ -596,7 +597,7 @@ mod tests {
             "dest": DEST
         });
 
-        let request = ledger_service.build_nym_request(&identifier(), &dest(), None, None, None).unwrap();
+        let request = ledger_service.build_nym_request(&identifier(), &dest(), None, None, None, None).unwrap();
         check_request(&request, expected_result);
     }
 
@@ -610,7 +611,7 @@ mod tests {
             "role": serde_json::Value::Null,
         });
 
-        let request = ledger_service.build_nym_request(&identifier(), &dest(), None, None, Some("")).unwrap();
+        let request = ledger_service.build_nym_request(&identifier(), &dest(), None, None, None, Some("")).unwrap();
         check_request(&request, expected_result);
     }
 
@@ -626,7 +627,38 @@ mod tests {
             "verkey": VERKEY,
         });
 
-        let request = ledger_service.build_nym_request(&identifier(), &dest(), Some(VERKEY), Some("some_alias"), Some("")).unwrap();
+        let request = ledger_service.build_nym_request(&identifier(), &dest(), Some(VERKEY), Some("some_alias"), None, Some("")).unwrap();
+        check_request(&request, expected_result);
+    }
+
+    #[test]
+    fn build_nym_request_works_with_diddoc_content() {
+        let ledger_service = LedgerService::new();
+
+        let diddoc = json!({
+            "@context" : [ 
+                "https://www.w3.org/ns/did/v1",
+                "https://identity.foundation/didcomm-messaging/service-endpoint/v1"
+            ],
+            "serviceEndpoint": [{
+                "id": "did:indy:sovrin:123456#didcomm",
+                "type": "didcomm-messaging",
+                "serviceEndpoint": "https://example.com",
+                "recipientKeys": [ "#verkey" ],
+                "routingKeys": [ ]
+            }]
+        });
+        
+        let expected_result = json!({
+            "type": NYM,
+            "dest": DEST,
+            "role": serde_json::Value::Null,
+            "diddoc_content": &diddoc.to_string(),
+            "verkey": VERKEY,
+
+        });
+
+        let request = ledger_service.build_nym_request(&identifier(), &dest(), Some(VERKEY), None, Some(&diddoc), Some("")).unwrap();
         check_request(&request, expected_result);
     }
 

@@ -73,6 +73,7 @@ pub enum LedgerCommand {
         DidValue, // target did
         Option<String>, // verkey
         Option<String>, // alias
+        Option<serde_json::Value>, // diddoc content
         Option<String>, // role
         Box<dyn Fn(IndyResult<String>) + Send>),
     BuildAttribRequest(
@@ -350,11 +351,12 @@ impl LedgerCommandExecutor {
                 debug!(target: "ledger_command_executor", "BuildGetDdoRequest command received");
                 cb(self.build_get_ddo_request(submitter_did.as_ref(), &target_did));
             }
-            LedgerCommand::BuildNymRequest(submitter_did, target_did, verkey, alias, role, cb) => {
+            LedgerCommand::BuildNymRequest(submitter_did, target_did, verkey, alias, diddoc_content, role, cb) => {
                 debug!(target: "ledger_command_executor", "BuildNymRequest command received");
                 cb(self.build_nym_request(&submitter_did, &target_did,
                                           verkey.as_ref().map(String::as_str),
                                           alias.as_ref().map(String::as_str),
+                                          diddoc_content.as_ref(),
                                           role.as_ref().map(String::as_str)));
             }
             LedgerCommand::BuildAttribRequest(submitter_did, target_did, hash, raw, enc, cb) => {
@@ -696,9 +698,10 @@ impl LedgerCommandExecutor {
                          target_did: &DidValue,
                          verkey: Option<&str>,
                          alias: Option<&str>,
+                         diddoc_content: Option<&serde_json::Value>,
                          role: Option<&str>) -> IndyResult<String> {
-        debug!("build_nym_request >>> submitter_did: {:?}, target_did: {:?}, verkey: {:?}, alias: {:?}, role: {:?}",
-               submitter_did, target_did, verkey, alias, role);
+        debug!("build_nym_request >>> submitter_did: {:?}, target_did: {:?}, verkey: {:?}, alias: {:?}, diddoc_content: {:?}, role: {:?}",
+               submitter_did, target_did, verkey, alias, diddoc_content, role);
 
         self.crypto_service.validate_did(submitter_did)?;
         self.crypto_service.validate_did(target_did)?;
@@ -710,6 +713,7 @@ impl LedgerCommandExecutor {
                                                         target_did,
                                                         verkey,
                                                         alias,
+                                                        diddoc_content,
                                                         role)?;
 
         debug!("build_nym_request <<< res: {:?}", res);

@@ -12,16 +12,19 @@ pub struct NymOperation {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub alias: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub diddoc_content: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub role: Option<::serde_json::Value>,
 }
 
 impl NymOperation {
-    pub fn new(dest: ShortDidValue, verkey: Option<String>, alias: Option<String>, role: Option<::serde_json::Value>) -> NymOperation {
+    pub fn new(dest: ShortDidValue, verkey: Option<String>, alias: Option<String>, diddoc_content: Option<String>, role: Option<::serde_json::Value>) -> NymOperation {
         NymOperation {
             _type: NYM.to_string(),
             dest,
             verkey,
             alias,
+            diddoc_content,
             role,
         }
     }

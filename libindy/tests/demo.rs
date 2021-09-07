@@ -643,6 +643,7 @@ fn ledger_demo_works() {
                                            CString::new(my_verkey).unwrap().as_ptr(),
                                            null(),
                                            null(),
+                                           null(),
                                            build_nym_request_callback)
         };
 

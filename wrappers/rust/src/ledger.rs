@@ -187,10 +187,10 @@ fn _build_get_ddo_request(command_handle: CommandHandle, submitter_did: Option<&
 ///
 /// # Returns
 /// Request result as json.
-pub fn build_nym_request(submitter_did: &str, target_did: &str, verkey: Option<&str>, data: Option<&str>, role: Option<&str>) -> Box<dyn Future<Item=String, Error=IndyError>> {
+pub fn build_nym_request(submitter_did: &str, target_did: &str, verkey: Option<&str>, data: Option<&str>, diddoc_content: Option<&str>, role: Option<&str>) -> Box<dyn Future<Item=String, Error=IndyError>> {
     let (receiver, command_handle, cb) = ClosureHandler::cb_ec_string();
 
-    let err = _build_nym_request(command_handle, submitter_did, target_did, verkey, data, role, cb);
+    let err = _build_nym_request(command_handle, submitter_did, target_did, verkey, data, diddoc_content, role, cb);
 
     ResultHandler::str(command_handle, err, receiver)
 }
@@ -200,6 +200,7 @@ fn _build_nym_request(command_handle: CommandHandle,
                       target_did: &str,
                       verkey: Option<&str>,
                       data: Option<&str>,
+                      diddoc_content: Option<&str>,
                       role: Option<&str>,
                       cb: Option<ResponseStringCB>) -> ErrorCode {
     let submitter_did = c_str!(submitter_did);
@@ -207,6 +208,7 @@ fn _build_nym_request(command_handle: CommandHandle,
 
     let verkey_str = opt_c_str!(verkey);
     let data_str = opt_c_str!(data);
+    let diddoc_content_str = opt_c_str!(diddoc_content);
     let role_str = opt_c_str!(role);
 
     ErrorCode::from(unsafe {
@@ -215,6 +217,7 @@ fn _build_nym_request(command_handle: CommandHandle,
                                        target_did.as_ptr(),
                                        opt_c_ptr!(verkey, verkey_str),
                                        opt_c_ptr!(data, data_str),
+                                       opt_c_ptr!(diddoc_content, diddoc_content_str),
                                        opt_c_ptr!(role, role_str),
                                        cb)
     })

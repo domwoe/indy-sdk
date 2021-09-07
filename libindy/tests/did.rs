@@ -603,7 +603,7 @@ mod high_cases {
             let new_verkey = did::replace_keys_start(setup.wallet_handle, &setup.did, "{}").unwrap();
 
             // 7. Send Nym request to Ledger with new verkey
-            let nym_request = ledger::build_nym_request(&setup.did, &setup.did, Some(&new_verkey), None, None).unwrap();
+            let nym_request = ledger::build_nym_request(&setup.did, &setup.did, Some(&new_verkey), None, None, None).unwrap();
             ledger::sign_and_submit_request(setup.pool_handle, setup.wallet_handle, &setup.did, &nym_request).unwrap();
 
             // 8. Send Schema request before apply replacing of keys

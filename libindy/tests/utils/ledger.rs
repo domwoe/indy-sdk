@@ -90,8 +90,8 @@ pub fn build_get_ddo_request(submitter_did: Option<&str>, target_did: &str) -> R
 }
 
 pub fn build_nym_request(submitter_did: &str, target_did: &str, verkey: Option<&str>,
-                         alias: Option<&str>, role: Option<&str>) -> Result<String, IndyError> {
-    ledger::build_nym_request(submitter_did, target_did, verkey, alias, role).wait()
+                         alias: Option<&str>, diddoc_content: Option<&str>, role: Option<&str>) -> Result<String, IndyError> {
+    ledger::build_nym_request(submitter_did, target_did, verkey, alias, diddoc_content, role).wait()
 }
 
 pub fn parse_get_nym_response(get_nym_response: &str) -> Result<String, IndyError> {

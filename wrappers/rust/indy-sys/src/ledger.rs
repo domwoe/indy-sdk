@@ -51,6 +51,7 @@ extern {
                                   target_did: CString,
                                   verkey: CString,
                                   alias: CString,
+                                  diddoc_content: CString,
                                   role: CString,
                                   cb: Option<ResponseStringCB>) -> Error;
 
