@@ -43,6 +43,7 @@ pub fn create_nym(
         &did,
         Some(&verkey),
         None,
+        None,
         role.prepare()
     ).wait()?;
 

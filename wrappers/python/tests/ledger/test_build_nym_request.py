@@ -12,7 +12,7 @@ async def test_build_nym_request_works_for_invalid_identifier():
     dest = "FYmoFw55GeQH7SRFa37dkx1d2dZ3zUF8ckg7wmL7ofN4"
 
     with pytest.raises(error.CommonInvalidStructure):
-        await ledger.build_nym_request(identifier, dest, None, None, None)
+        await ledger.build_nym_request(identifier, dest, None, None, None, None)
 
 
 @pytest.mark.asyncio
@@ -28,7 +28,7 @@ async def test_build_nym_request_works_for_only_required_fields():
         }
     }
 
-    response = json.loads((await ledger.build_nym_request(identifier, destination, None, None, None)))
+    response = json.loads((await ledger.build_nym_request(identifier, destination, None, None, None, None)))
     assert expected_response.items() <= response.items()
 
 
@@ -51,7 +51,7 @@ async def test_build_nym_request_works_with_option_fields():
         }
     }
 
-    response = json.loads(await ledger.build_nym_request(identifier, destination, ver_key, alias, role))
+    response = json.loads(await ledger.build_nym_request(identifier, destination, ver_key, alias, None, role))
     assert expected_response.items() <= response.items()
 
 
@@ -67,7 +67,7 @@ async def test_nym_request_works_for_different_roles(wallet_handle, pool_handle,
 async def check_for_role(pool_handle, wallet_handle, trustee_did, role, expected_role_value):
     (my_did, my_verkey) = await did.create_and_store_my_did(wallet_handle, "{}")
 
-    nym_request = await ledger.build_nym_request(trustee_did, my_did, my_verkey, None, role)
+    nym_request = await ledger.build_nym_request(trustee_did, my_did, my_verkey, None, None, role)
     await ledger.sign_and_submit_request(pool_handle, wallet_handle, trustee_did, nym_request)
 
     get_nym_request = await ledger.build_get_nym_request(my_did, my_did)
@@ -84,4 +84,4 @@ async def test_nym_request_works_for_invalid_role(identity_trustee1, identity_my
     (my_did, _) = identity_my1
 
     with pytest.raises(error.CommonInvalidStructure):
-        await ledger.build_nym_request(trustee_did, my_did, None, None, "WRONG_ROLE")
+        await ledger.build_nym_request(trustee_did, my_did, None, None, None, "WRONG_ROLE")

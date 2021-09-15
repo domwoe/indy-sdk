@@ -275,7 +275,7 @@ mod test_build_nym_request {
         let (did, verkey) = did::create_and_store_my_did(wallet.handle, "{}").wait().unwrap();
         let (trustee_did, _) = did::create_and_store_my_did(wallet.handle, "{}").wait().unwrap();
 
-        let nym_result = ledger::build_nym_request(&trustee_did, &did, Some(&verkey), None, NymRole::Trustee.prepare()).wait();
+        let nym_result = ledger::build_nym_request(&trustee_did, &did, Some(&verkey), None, None, NymRole::Trustee.prepare()).wait();
 
         match nym_result {
             Ok(_) => {},
@@ -294,7 +294,7 @@ mod test_build_nym_request {
         let (did, _) = did::create_and_store_my_did(wallet.handle, "{}").wait().unwrap();
         let (trustee_did, _) = did::create_and_store_my_did(wallet.handle, "{}").wait().unwrap();
 
-        let nym_result = ledger::build_nym_request(&trustee_did, &did, None, None, NymRole::Trustee.prepare()).wait();
+        let nym_result = ledger::build_nym_request(&trustee_did, &did, None, None, None, NymRole::Trustee.prepare()).wait();
 
         match nym_result {
             Ok(_) => {},
@@ -313,7 +313,42 @@ mod test_build_nym_request {
         let (did, _) = did::create_and_store_my_did(wallet.handle, "{}").wait().unwrap();
         let (trustee_did, _) = did::create_and_store_my_did(wallet.handle, "{}").wait().unwrap();
 
-        let nym_result = ledger::build_nym_request(&trustee_did, &did, None, Some("some_data"), NymRole::Trustee.prepare()).wait();
+        let nym_result = ledger::build_nym_request(&trustee_did, &did, None, Some("some_data"), None, NymRole::Trustee.prepare()).wait();
+
+        match nym_result {
+            Ok(_) => {},
+            Err(ec) => {
+                assert!(false, "build_nym_request returned error_code {:?}", ec);
+            }
+        }
+    }
+
+    #[test]
+    pub fn build_nym_request_with_diddoc_content_success() {
+        pool::set_protocol_version(PROTOCOL_VERSION as usize).wait().unwrap();
+
+        let wallet = Wallet::new();
+        let (did, _) = did::create_and_store_my_did(wallet.handle, "{}").wait().unwrap();
+        let (trustee_did, _) = did::create_and_store_my_did(wallet.handle, "{}").wait().unwrap();
+
+        let diddoc_content = r#"
+        {
+            "@context" : [ 
+                "https://www.w3.org/ns/did/v1",
+                "https://identity.foundation/didcomm-messaging/service-endpoint/v1"
+            ],
+            "serviceEndpoint": [
+                {
+                  "id": "did:indy:sovrin:123456#didcomm",
+                  "type": "didcomm-messaging",
+                  "serviceEndpoint": "https://example.com",
+                  "recipientKeys": [ "\#verkey" ],
+                  "routingKeys": [ ]
+                }
+            ]
+          }"#;
+
+        let nym_result = ledger::build_nym_request(&trustee_did, &did, None, None, Some(diddoc_content), NymRole::Trustee.prepare()).wait();
 
         match nym_result {
             Ok(_) => {},
